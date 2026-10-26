@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Seblak Adventure - Belajar Aljabar</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Sniglet:wght@400;800&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      font-family: 'Sniglet', cursive, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+    .font-title {
+      font-family: 'Fredoka One', cursive;
+    }
+    
+    /* Steam Animation */
+    @keyframes steam {
+      0% { transform: translateY(0) scaleX(1); opacity: 0; }
+      50% { opacity: 0.8; }
+      100% { transform: translateY(-30px) scaleX(1.5); opacity: 0; }
+    }
+    .steam-1 { animation: steam 2.5s infinite ease-out; }
+    .steam-2 { animation: steam 2.5s infinite ease-out 0.8s; }
+    .steam-3 { animation: steam 2.5s infinite ease-out 1.6s; }
+
+    /* Floating Animation */
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(5deg); }
+    }
+    .float-item { animation: floatSlow 3s ease-in-out infinite; }
+    .float-item-delay { animation: floatSlow 3.5s ease-in-out infinite 1s; }
+
+    /* Pulse Glow */
+    @keyframes pulseGlow {
+      0%, 100% { filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6)); transform: scale(1); }
+      50% { filter: drop-shadow(0 0 18px rgba(245, 158, 11, 0.9)); transform: scale(1.03); }
+    }
+    .btn-pulse { animation: pulseGlow 2s infinite ease-in-out; }
+
+    /* Custom Scrollbar for inner dialogs if needed */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 10px; }
+  #page-1 button[onclick="goToPage(2)"] {
+  position: absolute !important;
+  top: 85% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
+  z-index: 30 !important;
+  background: linear-gradient(to bottom, #ffb52e, #ff7900) !important;
+  color: #713000 !important;
+  font-family: 'Fredoka One', cursive !important;
+  font-size: 24px !important;
+  padding: 14px 45px !important;
+  border: 4px solid #fff2c7 !important;
+  border-radius: 22px !important;
+  box-shadow: 0 6px 0 #b94c00, 0 8px 15px rgba(0,0,0,0.35) !important;
+  cursor: pointer;
+}
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-800 h-screen w-screen overflow-hidden flex items-center justify-center p-0 m-0">
+
+  <!-- Landscape Game Container (16:9 Aspect Ratio Lock) -->
+  <div id="game-container" class="relative w-full h-full max-w-[100vw] max-h-[100vh] bg-amber-50 overflow-hidden flex flex-col justify-between shadow-2xl">
+
+    <!-- Top Navigation Overlay -->
+    <header class="absolute top-0 left-0 right-0 z-50 p-3 flex justify-between items-center pointer-events-none">
+  
+      <!-- Mute / Unmute Floating Sound Button -->
+      <button id="sound-btn" onclick="toggleSound()" class="pointer-events-auto bg-red-500 hover:bg-red-600 active:scale-95 text-white p-3 rounded-full border-4 border-amber-200 shadow-xl flex items-center justify-center transition-all duration-200 cursor-pointer">
+        <span id="sound-icon" class="text-2xl leading-none">🔊</span>
+      </button>
+    </header>
+
+    <!-- AUDIO UNLOCK OVERLAY DISEMBUNYIKAN -->
+<div id="audio-unlock-overlay" style="display: none;">
+    <button onclick="unlockAudio()" style="display: none;">
+        MULAI MAIN
+    </button>
+</div>
+
+    <!-- MAIN SCREEN AREA (5 PAGES) -->
+    <main class="relative w-full h-full flex-grow overflow-hidden">
+
+      <!-- ================= HALAMAN 1: SPLASH SCREEN ================= -->
+<section id="page-1" class="page-screen absolute inset-0 flex flex-col items-center justify-center p-4"
+  style="background-image: url('HAL1.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+
+  <!-- Lapisan gelap tipis biar teksnya gampang dibaca -->
+        <!-- Floating Toppings Background decoration -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none opacity-40">
+          <span class="absolute top-10 left-12 text-4xl float-item">🥚</span>
+          <span class="absolute top-20 right-20 text-4xl float-item-delay">🥬</span>
+          <span class="absolute bottom-12 left-24 text-4xl float-item-delay">🥟</span>
+          <span class="absolute bottom-16 right-16 text-4xl float-item">🌶️</span>
+        </div>
+
+        <div class="relative z-10 flex flex-col items-center text-center"
+          <!-- Tombol MULAI -->
+         </div>
+         <button id="tombol-mulai" onclick="goToPage(2)">
+  MULAI
+</button>
+      </section>
+
+      <!-- ================= HALAMAN 2: PERKENALAN COWOK ================= -->
+      <section id="page-2" class="page-screen absolute inset-0 hidden p-4 flex items-center justify-center"
+  style="background-image: url('hal\ 2.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        <div class="w-full max-w-4xl h-full flex items-center justify-between gap-4 px-4">
+          
+            <div class="absolute bottom-6 left-0 right-0 z-30 flex justify-between items-center px-8">
+  <button onclick="goToPage(1)" class="bg-slate-400 hover:bg-slate-500 text-white font-title px-5 py-2.5 rounded-xl border-2 border-white shadow-md">
+    ◀ KEMBALI
+  </button>
+
+  <button onclick="goToPage(3)" class="bg-emerald-500 hover:bg-emerald-600 text-white font-title px-7 py-2.5 rounded-xl border-2 border-white shadow-lg">
+    LANJUTKAN ▶
+  </button>
+</div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ================= HALAMAN 3: PENGERTIAN ALJABAR ================= -->
+<!-- ================= HALAMAN 3: PENGERTIAN ALJABAR ================= -->
+<section
+  id="page-3"
+  class="page-screen absolute inset-0 hidden"
+  style="background-image: url('hal 3.jpeg');
+         background-size: 100% 100%;
+         background-position: center;
+         background-repeat: no-repeat;">
+
+  <div class="absolute bottom-6 left-0 right-0 z-30
+              flex justify-between items-center px-8">
+
+    <button onclick="goToPage(2)"
+      class="bg-amber-700 text-white font-title px-5 py-2.5 rounded-xl shadow-md">
+      ◀ KEMBALI
+    </button>
+
+    <button onclick="goToPage(4)"
+      class="bg-emerald-600 text-white font-title px-6 py-2.5 rounded-xl shadow-lg">
+      PAHAM, LANJUT! ▶
+    </button>
+
+  </div>
+</section>
+
+
+<!-- ================= HALAMAN 4: PERKENALAN CEWEK ================= -->
+<section
+  id="page-4"
+  class="page-screen absolute inset-0 hidden"
+  style="background-image: url('hal 4.jpeg');
+         background-size: 100% 100%;
+         background-position: center;
+         background-repeat: no-repeat;">
+
+  <div class="absolute bottom-6 left-0 right-0 z-30
+              flex justify-between items-center px-8">
+
+    <button onclick="goToPage(3)"
+      class="bg-slate-400 text-white font-title px-5 py-2.5 rounded-xl shadow-md">
+      ◀ KEMBALI
+    </button>
+
+    <button onclick="goToPage(5)"
+      class="bg-teal-600 text-white font-title px-7 py-2.5 rounded-xl shadow-lg">
+      KE MENU UTAMA ▶
+    </button>
+
+  </div>
+</section>
+
+      <!-- ================= HALAMAN 5: MENU BELAJAR ================= -->
+      <!-- HALAMAN 5: MENU BELAJAR -->
+<section
+  id="page-5"
+ class="page-screen absolute inset-0 hidden"
+  style="
+  background-image: url('hal\ 5.jpeg');
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+"
+>
+  <!-- Area pilihan menu -->
+  <div class="flex flex-1 flex-col items-center justify-center gap-4 mt-24">
+
+    <!-- Dua menu berdampingan -->
+    <!-- Dua menu berdampingan -->
+<div style="
+  position: absolute;
+  top: 75%;
+  left: 51%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  width: 90%;
+  z-index: 10;
+">
+
+  <button
+    type="button" 
+    onclick="selectMenu('materi')"
+    style="width: 180px; max-width: 42%; background: transparent; border: none; padding: 0;"
+  >
+    <img
+  <img
+    src="materi.png"
+    alt="Materi Aljabar"
+    class="block w-full h-auto object-contain"
+    style="max-height: 48vh; background: transparent;"
+/>
+/>
+  </button>
+
+  <button
+    type="button"
+    onclick="selectMenu('contoh soal')"
+    style="width: 180px; max-width: 42%; background: transparent; border: none; padding: 0;"
+  >
+    <img
+  <img
+    src="contoh soal.png"
+    alt="contoh soal"
+    class="block w-full h-auto object-contain"
+    style="max-height: 48vh; background: transparent;"
+/>
+/>
+  </button>
+
+</div>
+
+  <!-- Tombol kembali di kiri bawah -->
+<div class="fixed bottom-6 left-6 z-50">
+  <button
+    type="button"
+    onclick="goToPage(4)"
+    class="rounded-xl border-2 border-white bg-amber-700 px-4 py-2 text-sm font-bold text-white shadow-lg"
+  >
+    ◀ KEMBALI
+  </button>
+</div>
+
+</section>
+
+
+<!-- ================= HALAMAN 6: MATERI ALJABAR ================= -->
+      <section id="page-6" class="page-screen absolute inset-0 hidden overflow-hidden"
+        style="background-image: url('hal 6.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        
+
+        <!-- Tombol KEMBALI di Kiri Bawah -->
+        <button onclick="goToPage(5)" style="position: absolute; bottom: 6%; left: 8%; z-index: 30; background: #a85d16; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #723c0c;">
+          ◀ KEMBALI
+        </button>
+
+        <!-- Tombol SELANJUTNYA di Kanan Bawah -->
+        <button onclick="goToPage(7)" style="position: absolute; bottom: 6%; right: 8%; z-index: 30; background: #059669; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #046c4e;">
+          SELANJUTNYA ▶
+        </button>
+      </section>
+
+
+<!-- ================= HALAMAN 7: MATERI ALJABAR ================= -->
+      <section id="page-7" class="page-screen absolute inset-0 hidden overflow-hidden"
+        style="background-image: url('hal\ 7.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        
+
+        <!-- Tombol KEMBALI di Kiri Bawah -->
+        <button onclick="goToPage(6)" style="position: absolute; bottom: 6%; left: 8%; z-index: 30; background: #a85d16; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #723c0c;">
+          ◀ KEMBALI
+        </button>
+
+        <!-- Tombol SELANJUTNYA di Kanan Bawah -->
+        <button onclick="goToPage(8)" style="position: absolute; bottom: 6%; right: 8%; z-index: 30; background: #059669; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #046c4e;">
+          SELANJUTNYA ▶
+        </button>
+      </section>
+
+<!-- ================= AKHIR HALAMAN 7 ================= -->
+ <!-- ================= HALAMAN 8: MATERI ALJABAR ================= -->
+      <section id="page-8" class="page-screen absolute inset-0 hidden overflow-hidden"
+        style="background-image: url('hal\ 8.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        
+
+        <!-- Tombol KEMBALI di Kiri Bawah -->
+        <button onclick="goToPage(7)" style="position: absolute; bottom: 6%; left: 8%; z-index: 30; background: #a85d16; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #723c0c;">
+          ◀ KEMBALI
+        </button>
+
+        <!-- Tombol SELANJUTNYA di Kanan Bawah -->
+        <button onclick="goToPage(9)" style="position: absolute; bottom: 6%; right: 8%; z-index: 30; background: #059669; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #046c4e;">
+          SELANJUTNYA ▶
+        </button>
+      </section>
+
+      <!-- ================= HALAMAN 9: MATERI ALJABAR ================= -->
+      <section id="page-9" class="page-screen absolute inset-0 hidden overflow-hidden"
+        style="background-image: url('hal\ 9.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        
+
+        <!-- Tombol KEMBALI di Kiri Bawah -->
+        <button onclick="goToPage(8)" style="position: absolute; bottom: 6%; left: 8%; z-index: 30; background: #a85d16; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #723c0c;">
+          ◀ KEMBALI
+        </button>
+
+        <!-- Tombol SELANJUTNYA di Kanan Bawah -->
+        <button onclick="goToPage(10)" style="position: absolute; bottom: 6%; right: 8%; z-index: 30; background: #059669; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #046c4e;">
+          SELANJUTNYA ▶
+        </button>
+      </section>
+
+      <!-- ================= HALAMAN 10: MATERI ALJABAR ================= -->
+      <section id="page-10" class="page-screen absolute inset-0 hidden overflow-hidden"
+        style="background-image: url('hal\ 10.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        
+
+        <!-- Tombol KEMBALI di Kiri Bawah -->
+        <button onclick="goToPage(9)" style="position: absolute; bottom: 6%; left: 8%; z-index: 30; background: #a85d16; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #723c0c;">
+          ◀ KEMBALI
+        </button>
+
+        <!-- Tombol SELANJUTNYA di Kanan Bawah -->
+        <button onclick="goToPage(11)" style="position: absolute; bottom: 6%; right: 8%; z-index: 30; background: #059669; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #046c4e;">
+          SELANJUTNYA ▶
+        </button>
+      </section>
+
+      <!-- ================= HALAMAN 11: MATERI ALJABAR ================= -->
+      <section id="page-11" class="page-screen absolute inset-0 hidden overflow-hidden"
+        style="background-image: url('hal\ 11.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        
+
+        <!-- Tombol KEMBALI di Kiri Bawah -->
+        <button onclick="goToPage(10)" style="position: absolute; bottom: 6%; left: 8%; z-index: 30; background: #a85d16; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #723c0c;">
+          ◀ KEMBALI
+        </button>
+
+        <!-- Tombol SELANJUTNYA di Kanan Bawah -->
+        <button onclick="goToPage(12)" style="position: absolute; bottom: 6%; right: 8%; z-index: 30; background: #059669; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #046c4e;">
+          SELANJUTNYA ▶
+        </button>
+      </section>
+
+      <!-- ================= HALAMAN 12: MATERI ALJABAR ================= -->
+      <section id="page-12" class="page-screen absolute inset-0 hidden overflow-hidden"
+        style="background-image: url('hal\ 12.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        
+
+        <!-- Tombol KEMBALI di Kiri Bawah -->
+        <button onclick="goToPage(11)" style="position: absolute; bottom: 6%; left: 8%; z-index: 30; background: #a85d16; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #723c0c;">
+          ◀ KEMBALI
+        </button>
+
+        <!-- Tombol SELANJUTNYA di Kanan Bawah -->
+        <button onclick="goToPage(13)" style="position: absolute; bottom: 6%; right: 8%; z-index: 30; background: #059669; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #046c4e;">
+          SELANJUTNYA ▶
+        </button>
+      </section>
+
+      <!-- ================= HALAMAN 13: MATERI ALJABAR ================= -->
+      <section id="page-13" class="page-screen absolute inset-0 hidden overflow-hidden"
+        style="background-image: url('hal\ 13.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        
+
+        <!-- Tombol KEMBALI di Kiri Bawah -->
+        <button onclick="goToPage(12)" style="position: absolute; bottom: 6%; left: 8%; z-index: 30; background: #a85d16; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #723c0c;">
+          ◀ KEMBALI
+        </button>
+
+        <!-- Tombol SELANJUTNYA di Kanan Bawah -->
+        <button onclick="goToPage(14)" style="position: absolute; bottom: 6%; right: 8%; z-index: 30; background: #059669; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #046c4e;">
+          SELANJUTNYA ▶
+        </button>
+      </section>
+
+      <!-- ================= HALAMAN 14: MATERI ALJABAR ================= -->
+      <section id="page-14" class="page-screen absolute inset-0 hidden overflow-hidden"
+        style="background-image: url('hal\ 14.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        
+
+        <!-- Tombol KEMBALI di Kiri Bawah -->
+        <button onclick="goToPage(13)" style="position: absolute; bottom: 6%; left: 8%; z-index: 30; background: #a85d16; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #723c0c;">
+          ◀ KEMBALI
+        </button>
+
+        <!-- Tombol SELANJUTNYA di Kanan Bawah -->
+        <button onclick="goToPage(15)" style="position: absolute; bottom: 6%; right: 8%; z-index: 30; background: #059669; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #046c4e;">
+          SELANJUTNYA ▶
+        </button>
+      </section>
+
+      <!-- ================= HALAMAN 15: MATERI ALJABAR ================= -->
+      <section id="page-15" class="page-screen absolute inset-0 hidden overflow-hidden"
+        style="background-image: url('hal\ 15.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        
+
+        <!-- Tombol KEMBALI di Kiri Bawah -->
+        <button onclick="goToPage(14)" style="position: absolute; bottom: 6%; left: 8%; z-index: 30; background: #a85d16; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #723c0c;">
+          ◀ KEMBALI
+        </button>
+
+        <!-- Tombol SELANJUTNYA di Kanan Bawah -->
+        <button onclick="goToPage(5)" style="position: absolute; bottom: 6%; right: 8%; z-index: 30; background: #059669; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #046c4e;">
+          MENU ▶
+        </button>
+      </section>
+      
+      
+  <!-- WEB AUDIO API SYNTHESIZER SCRIPT -->
+  <script>
+    // Audio Context State
+    let audioCtx = null;
+    let isMuted = false;
+    let bgmInterval = null;
+    let isBgmPlaying = false;
+
+    // Initialize Web Audio Context
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContext();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    // Unlock Audio explicitly on first touch / click
+    function unlockAudio() {
+      initAudio();
+      document.getElementById('audio-unlock-overlay').classList.add('hidden');
+      playPopSFX();
+      startBGM();
+    }
+
+    // Global click listener to unlock audio if user clicks anywhere on page
+    window.addEventListener('click', () => {
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }, { once: true });
+
+    // SFX Pop / Click Synth (High pitch 800Hz -> 200Hz drop)
+    function playPopSFX() {
+      if (isMuted || !audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sine';
+        const now = audioCtx.currentTime;
+
+        osc.frequency.setValueAtTime(800, now);
+        osc.frequency.exponentialRampToValueAtTime(200, now + 0.08);
+
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.09);
+      } catch (e) {
+        console.error("Audio SFX Error:", e);
+      }
+    }
+
+    // Cheerful Chiptune BGM Generator using Web Audio API Synth
+    const BGM_NOTES = [
+      261.63, 329.63, 392.00, 523.25, // C4, E4, G4, C5
+      349.23, 440.00, 523.25, 698.46, // F4, A4, C5, F5
+      392.00, 493.88, 587.33, 783.99, // G4, B4, D5, G5
+      523.25, 392.00, 329.63, 261.63  // C5, G4, E4, C4
+    ];
+    let noteIndex = 0;
+
+    function playBgmNote() {
+      if (isMuted || !audioCtx || !isBgmPlaying) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'triangle'; // Happy chiptune timbre
+        const freq = BGM_NOTES[noteIndex % BGM_NOTES.length];
+        const now = audioCtx.currentTime;
+
+        osc.frequency.setValueAtTime(freq, now);
+
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.2);
+
+        noteIndex++;
+      } catch (e) {
+        console.error("BGM Error:", e);
+      }
+    }
+
+    function startBGM() {
+      if (isBgmPlaying) return;
+      isBgmPlaying = true;
+      if (bgmInterval) clearInterval(bgmInterval);
+      bgmInterval = setInterval(playBgmNote, 220); // Cheerful tempo
+    }
+
+    function toggleSound() {
+      initAudio();
+      isMuted = !isMuted;
+      const icon = document.getElementById('sound-icon');
+      const btn = document.getElementById('sound-btn');
+
+      if (isMuted) {
+        icon.textContent = '🔇';
+        btn.classList.replace('bg-red-500', 'bg-gray-500');
+      } else {
+        icon.textContent = '🔊';
+        btn.classList.replace('bg-gray-500', 'bg-red-500');
+        playPopSFX();
+      }
+    }
+
+    // Page Navigation Router
+    function goToPage(pageNumber) {
+      playPopSFX();
+      
+      // Hide all pages
+      document.querySelectorAll('.page-screen').forEach(page => {
+        page.classList.add('hidden');
+      });
+
+      // Show target page
+      const targetPage = document.getElementById(`page-${pageNumber}`);
+      if (targetPage) {
+        targetPage.classList.remove('hidden');
+      }
+    }
+
+    function selectMenu(type) {
+    playPopSFX();
+
+    if (type === 'materi') {
+        goToPage(6);
+    } else {
+        goToPage(16);
+    }
+}
+
+    // Attach click sound to all buttons automatically
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => playPopSFX());
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Seblak Adventure - Belajar Aljabar & Topping Seblak</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Sniglet:wght@400;800&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Sniglet', cursive, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+    .font-title {
+      font-family: 'Fredoka One', cursive;
+    }
+    
+    /* Steam Animation */
+    @keyframes steam {
+      0% { transform: translateY(0) scaleX(1); opacity: 0; }
+      50% { opacity: 0.8; }
+      100% { transform: translateY(-30px) scaleX(1.5); opacity: 0; }
+    }
+    .steam-1 { animation: steam 2.5s infinite ease-out; }
+    .steam-2 { animation: steam 2.5s infinite ease-out 0.8s; }
+    .steam-3 { animation: steam 2.5s infinite ease-out 1.6s; }
+
+    /* Floating Animation */
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(5deg); }
+    }
+    .float-item { animation: floatSlow 3s ease-in-out infinite; }
+    .float-item-delay { animation: floatSlow 3.5s ease-in-out infinite 1s; }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 10px; }
+
+    #page-1 button[onclick="goToPage(2)"] {
+      position: absolute !important;
+      top: 85% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      margin: 0 !important;
+      z-index: 30 !important;
+      background: linear-gradient(to bottom, #ffb52e, #ff7900) !important;
+      color: #713000 !important;
+      font-family: 'Fredoka One', cursive !important;
+      font-size: 24px !important;
+      padding: 14px 45px !important;
+      border: 4px solid #fff2c7 !important;
+      border-radius: 22px !important;
+      box-shadow: 0 6px 0 #b94c00, 0 8px 15px rgba(0,0,0,0.35) !important;
+      cursor: pointer;
+    }
+
+    body {
+      background-color: #1a1a2e;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    /* Game memenuhi seluruh layar */
+.game-container {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: none;
+  background-color: #222;
+}
+
+    .hud {
+      display: none;
+    }
+
+    .game-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .hud-box {
+      background: rgba(0, 0, 0, 0.25);
+      padding: 6px 14px;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hud-label {
+      font-size: 0.65rem;
+      opacity: 0.8;
+    }
+
+    .hud-value {
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    /* CSS Khusus Arena Game Seblak (Halaman 17) */
+    .game-arena {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background-color: #f4a261;
+    }
+
+      .bg-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+    
+
+    .topping-slots-container {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 5;
+    }
+
+    .topping-item {
+      position: absolute;
+      width: 85px;
+      height: 38px;
+      padding: 0;
+      margin: 0;
+      background: #fef08a !important; /* Warna latar belakang kuning cerah */
+      border: 2px solid #b45309 !important; /* Garis tepi coklat */
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3) !important;
+      color: #78350f !important; /* Warna teks coklat tua */
+      font-size: 12px !important; /* Ukuran huruf jelas */
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 15;
+      transform: translate(-50%, -50%);
+      transition: transform 0.2s ease;
+    }
+
+    .topping-item:hover:not(.disabled) {
+      transform: translate(-50%, -50%) scale(1.1);
+      background: #fde047 !important;
+    }
+
+    .topping-item.disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+      filter: grayscale(1);
+    }
+
+.topping-item img {
+  display: none;
+}
+
+/* Posisi area klik setiap topping */
+.topping-1 {
+  left: 13%;
+  top: 62%;
+}
+
+.topping-2 {
+  left: 30%;
+  top: 62%;
+}
+
+.topping-3 {
+  left: 47%;
+  top: 62%;
+}
+
+.topping-4 {
+  left: 64%;
+  top: 62%;
+}
+
+.topping-5 {
+  left: 13%;
+  top: 78%;
+}
+
+.topping-6 {
+  left: 30%;
+  top: 78%;
+}
+
+.topping-7 {
+  left: 47%;
+  top: 78%;
+}
+
+.topping-8 {
+  left: 64%;
+  top: 78%;
+}
+    .topping-item img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: transparent;
+      border: none;
+      filter: drop-shadow(0 3px 4px rgba(0,0,0,0.2));
+    }
+
+    .topping-item:hover:not(.disabled) {
+      transform: scale(1.15) translateY(-4px);
+    }
+
+    .topping-item.disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+      filter: grayscale(1);
+    }
+
+    .character-container {
+      position: absolute;
+      bottom: 10px;
+      right: 20px;
+      width: 160px;
+      height: 180px;
+      z-index: 7;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .character-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    
+
+/* Area mangkuk seblak */
+.tray-zone {
+    position: absolute;
+    bottom: 205px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 210px;
+    height: 130px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    gap: 0;
+    z-index: 20;
+    overflow: visible;
+}
+
+
+
+/* Ukuran setiap topping di mangkuk */
+.tray-zone .collected-topping {
+    width: 85px;
+    height: 85px;
+    flex: 0 0 55px;
+    object-fit: contain;
+    display: block;
+    margin: -12px -15px;
+    padding: 0;
+}
+
+
+
+
+
+    .game-modal {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.65);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 25;
+      backdrop-filter: blur(3px);
+    }
+
+    .game-modal-content {
+      background: white;
+      width: 85%;
+      max-width: 450px;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .topping-badge {
+      background: #e63946;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      font-weight: bold;
+    }
+
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .option-btn {
+      background: #f8f9fa;
+      border: 2px solid #e9ecef;
+      padding: 8px 10px;
+      border-radius: 8px;
+      text-align: left;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .option-btn:hover {
+      background: #e2e6ea;
+      border-color: #adb5bd;
+    }
+
+    .option-btn.selected {
+      background: #d8f3dc;
+      border-color: #52b788;
+      font-weight: bold;
+    }
+
+    .cooking-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 20;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0); }
+      to { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+   <audio id="suaraKlik" src="popSFX.wav" preload="auto"></audio>
+  <audio id="musikLatar" src="audio.mp3" loop preload="auto"></audio>
+
+  <!-- Landscape Game Container -->
+  <div id="game-container" class="game-container">
+  
+    <!-- Top Navigation Overlay -->
+    <header class="absolute top-0 left-0 right-0 z-50 p-3 flex justify-between items-center pointer-events-none">
+      <button id="sound-btn" onclick="toggleSound()" class="pointer-events-auto bg-red-500 hover:bg-red-600 active:scale-95 text-white p-3 rounded-full border-4 border-amber-200 shadow-xl flex items-center justify-center transition-all duration-200 cursor-pointer">
+        <span id="sound-icon" class="text-2xl leading-none">🔊</span>
+      </button>
+    </header>
+
+    <div id="audio-unlock-overlay" style="display: none;">
+      <button onclick="unlockAudio()" style="display: none;">MULAI MAIN</button>
+    </div>
+
+    <!-- MAIN SCREEN AREA -->
+    <main class="relative w-full h-full flex-grow overflow-hidden flex flex-col">
+
+      <!-- ================= HALAMAN 1: SPLASH SCREEN ================= -->
+      <section id="page-1" class="page-screen absolute inset-0 flex flex-col items-center justify-center p-4"
+        style="background-image: url('HAL1.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        <div class="absolute inset-0 overflow-hidden pointer-events-none opacity-40">
+          <span class="absolute top-10 left-12 text-4xl float-item">🥚</span>
+          <span class="absolute top-20 right-20 text-4xl float-item-delay">🥬</span>
+          <span class="absolute bottom-12 left-24 text-4xl float-item-delay">🥟</span>
+          <span class="absolute bottom-16 right-16 text-4xl float-item">🌶️</span>
+        </div>
+        <button id="tombol-mulai" onclick="goToPage(2)">MULAI</button>
+      </section>
+
+      <!-- ================= HALAMAN 2: PERKENALAN COWOK ================= -->
+      <section id="page-2" class="page-screen absolute inset-0 hidden p-4 flex items-center justify-center"
+        style="background-image: url('hal 2.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        <div class="w-full max-w-4xl h-full flex items-center justify-between gap-4 px-4">
+          <div class="absolute bottom-6 left-0 right-0 z-30 flex justify-between items-center px-8">
+            <button onclick="goToPage(1)" class="bg-slate-400 hover:bg-slate-500 text-white font-title px-5 py-2.5 rounded-xl border-2 border-white shadow-md">◀ KEMBALI</button>
+            <button onclick="goToPage(3)" class="bg-emerald-500 hover:bg-emerald-600 text-white font-title px-7 py-2.5 rounded-xl border-2 border-white shadow-lg">LANJUTKAN ▶</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= HALAMAN 3: PENGERTIAN ALJABAR ================= -->
+      <section id="page-3" class="page-screen absolute inset-0 hidden"
+        style="background-image: url('hal 3.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        <div class="absolute bottom-6 left-0 right-0 z-30 flex justify-between items-center px-8">
+          <button onclick="goToPage(2)" class="bg-amber-700 text-white font-title px-5 py-2.5 rounded-xl shadow-md">◀ KEMBALI</button>
+          <button onclick="goToPage(4)" class="bg-emerald-600 text-white font-title px-6 py-2.5 rounded-xl shadow-lg">PAHAM, LANJUT! ▶</button>
+        </div>
+      </section>
+
+      <!-- ================= HALAMAN 4: PERKENALAN CEWEK ================= -->
+      <section id="page-4" class="page-screen absolute inset-0 hidden"
+        style="background-image: url('hal 4.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        <div class="absolute bottom-6 left-0 right-0 z-30 flex justify-between items-center px-8">
+          <button onclick="goToPage(3)" class="bg-slate-400 text-white font-title px-5 py-2.5 rounded-xl shadow-md">◀ KEMBALI</button>
+          <button onclick="goToPage(5)" class="bg-teal-600 text-white font-title px-7 py-2.5 rounded-xl shadow-lg">KE MENU UTAMA ▶</button>
+        </div>
+      </section>
+
+      <!-- ================= HALAMAN 5: MENU BELAJAR ================= -->
+      <section id="page-5" class="page-screen absolute inset-0 hidden"
+        style="background-image: url('hal 5.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        <div style="position: absolute; top: 75%; left: 51%; transform: translate(-50%, -50%); display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 24px; width: 90%; z-index: 10;">
+          <button type="button" onclick="selectMenu('materi')" style="width: 180px; max-width: 42%; background: transparent; border: none; padding: 0; cursor: pointer;">
+            <img src="materi.png" alt="Materi Aljabar" class="block w-full h-auto object-contain" style="max-height: 48vh; background: transparent;" />
+          </button>
+          <button type="button" onclick="selectMenu('contoh soal')" style="width: 180px; max-width: 42%; background: transparent; border: none; padding: 0; cursor: pointer;">
+            <img src="contoh soal.png" alt="contoh soal" class="block w-full h-auto object-contain" style="max-height: 48vh; background: transparent;" />
+          </button>
+        </div>
+        <div class="fixed bottom-6 left-6 z-50">
+          <button type="button" onclick="goToPage(4)" class="rounded-xl border-2 border-white bg-amber-700 px-4 py-2 text-sm font-bold text-white shadow-lg cursor-pointer">◀ KEMBALI</button>
+        </div>
+      </section>
+
+      <!-- ================= HALAMAN 6 - 15: MATERI ALJABAR ================= -->
+      <section id="page-6" class="page-screen absolute inset-0 hidden overflow-hidden" style="background-image: url('hal 6.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        <button onclick="goToPage(5)" style="position: absolute; bottom: 6%; left: 8%; z-index: 30; background: #a85d16; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #723c0c;">◀ KEMBALI</button>
+        <button onclick="goToPage(7)" style="position: absolute; bottom: 6%; right: 8%; z-index: 30; background: #059669; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #046c4e;">SELANJUTNYA ▶</button>
+      </section>
+
+      <section id="page-7" class="page-screen absolute inset-0 hidden overflow-hidden" style="background-image: url('hal 7.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        <button onclick="goToPage(6)" style="position: absolute; bottom: 6%; left: 8%; z-index: 30; background: #a85d16; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #723c0c;">◀ KEMBALI</button>
+        <button onclick="goToPage(8)" style="position: absolute; bottom: 6%; right: 8%; z-index: 30; background: #059669; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #046c4e;">SELANJUTNYA ▶</button>
+      </section>
+
+      <section id="page-8" class="page-screen absolute inset-0 hidden overflow-hidden" style="background-image: url('hal 8.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        <button onclick="goToPage(7)" style="position: absolute; bottom: 6%; left: 8%; z-index: 30; background: #a85d16; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #723c0c;">◀ KEMBALI</button>
+        <button onclick="goToPage(9)" style="position: absolute; bottom: 6%; right: 8%; z-index: 30; background: #059669; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #046c4e;">SELANJUTNYA ▶</button>
+      </section>
+
+      <section id="page-9" class="page-screen absolute inset-0 hidden overflow-hidden" style="background-image: url('hal 9.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        <button onclick="goToPage(8)" style="position: absolute; bottom: 6%; left: 8%; z-index: 30; background: #a85d16; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #723c0c;">◀ KEMBALI</button>
+        <button onclick="goToPage(10)" style="position: absolute; bottom: 6%; right: 8%; z-index: 30; background: #059669; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #046c4e;">SELANJUTNYA ▶</button>
+      </section>
+
+      <section id="page-10" class="page-screen absolute inset-0 hidden overflow-hidden" style="background-image: url('hal 10.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        <button onclick="goToPage(9)" style="position: absolute; bottom: 6%; left: 8%; z-index: 30; background: #a85d16; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #723c0c;">◀ KEMBALI</button>
+        <button onclick="goToPage(11)" style="position: absolute; bottom: 6%; right: 8%; z-index: 30; background: #059669; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #046c4e;">SELANJUTNYA ▶</button>
+      </section>
+
+      <section id="page-11" class="page-screen absolute inset-0 hidden overflow-hidden" style="background-image: url('hal 11.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        <button onclick="goToPage(10)" style="position: absolute; bottom: 6%; left: 8%; z-index: 30; background: #a85d16; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #723c0c;">◀ KEMBALI</button>
+        <button onclick="goToPage(12)" style="position: absolute; bottom: 6%; right: 8%; z-index: 30; background: #059669; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #046c4e;">SELANJUTNYA ▶</button>
+      </section>
+
+      <section id="page-12" class="page-screen absolute inset-0 hidden overflow-hidden" style="background-image: url('hal 12.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        <button onclick="goToPage(11)" style="position: absolute; bottom: 6%; left: 8%; z-index: 30; background: #a85d16; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #723c0c;">◀ KEMBALI</button>
+        <button onclick="goToPage(13)" style="position: absolute; bottom: 6%; right: 8%; z-index: 30; background: #059669; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #046c4e;">SELANJUTNYA ▶</button>
+      </section>
+
+      <section id="page-13" class="page-screen absolute inset-0 hidden overflow-hidden" style="background-image: url('hal 13.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        <button onclick="goToPage(12)" style="position: absolute; bottom: 6%; left: 8%; z-index: 30; background: #a85d16; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #723c0c;">◀ KEMBALI</button>
+        <button onclick="goToPage(14)" style="position: absolute; bottom: 6%; right: 8%; z-index: 30; background: #059669; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #046c4e;">SELANJUTNYA ▶</button>
+      </section>
+
+      <section id="page-14" class="page-screen absolute inset-0 hidden overflow-hidden" style="background-image: url('hal 14.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        <button onclick="goToPage(13)" style="position: absolute; bottom: 6%; left: 8%; z-index: 30; background: #a85d16; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #723c0c;">◀ KEMBALI</button>
+        <button onclick="goToPage(15)" style="position: absolute; bottom: 6%; right: 8%; z-index: 30; background: #059669; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #046c4e;">SELANJUTNYA ▶</button>
+      </section>
+
+      <section id="page-15" class="page-screen absolute inset-0 hidden overflow-hidden" style="background-image: url('hal 15.jpeg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+        <button onclick="goToPage(14)" style="position: absolute; bottom: 6%; left: 8%; z-index: 30; background: #a85d16; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #723c0c;">◀ KEMBALI</button>
+        <button onclick="goToPage(5)" style="position: absolute; bottom: 6%; right: 8%; z-index: 30; background: #059669; color: white; border: 3px solid white; border-radius: 14px; padding: 12px 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #046c4e;">MENU ▶</button>
+      </section>
+
+      <!-- ================= HALAMAN 16: PEMILIHAN KARAKTER ================= -->
+      <section id="page-16" class="page-screen absolute inset-0 hidden flex flex-col items-center justify-center p-4"
+        style="background: linear-gradient(135deg, #f4a261, #e76f51);">
+        <div class="absolute inset-0 bg-black/30 backdrop-blur-xs"></div>
+        <div class="relative z-10 flex flex-col items-center max-w-xl w-full bg-white/90 p-8 rounded-3xl shadow-2xl border-4 border-amber-300 text-center">
+          <h2 class="font-title text-3xl text-amber-900 mb-2">Pilih Karaktermu!</h2>
+          <p class="text-slate-700 text-sm mb-6">Siapa yang akan menemanimu meracik seblak hari ini?</p>
+          
+          <div class="flex gap-6 justify-center items-center mb-8 w-full">
+            <!-- Pilihan Cowok (Ganti "cowok.png" dengan nama file gambar cowok Anda) -->
+            <button id="btn-boy" onclick="selectCharacter('boy')" class="flex-1 flex flex-col items-center bg-amber-50 hover:bg-amber-100 p-4 rounded-2xl shadow-md border-4 border-amber-200 transition-all hover:scale-105 cursor-pointer">
+              <div class="w-28 h-28 mb-2 flex items-center justify-center">
+                <img src="karakter cowo.png" alt="Karakter Cowok" class="w-full h-full object-contain" />
+              </div>
+              <span class="font-title text-lg text-amber-900">Cowok</span>
+            </button>
+
+            <!-- Pilihan Cewek (Ganti "cewek.png" dengan nama file gambar cewek Anda) -->
+            <button id="btn-girl" onclick="selectCharacter('girl')" class="flex-1 flex flex-col items-center bg-pink-50 hover:bg-pink-100 p-4 rounded-2xl shadow-md border-4 border-pink-200 transition-all hover:scale-105 cursor-pointer">
+              <div class="w-28 h-28 mb-2 flex items-center justify-center">
+                <img src="karakter cewe.png" alt="Karakter Cewek" class="w-full h-full object-contain" />
+              </div>
+              <span class="font-title text-lg text-pink-900">Cewek</span>
+            </button>
+          </div>
+
+          <!-- Tombol Navigasi Bawah -->
+          <div class="flex justify-between items-center w-full gap-4">
+            <button onclick="goToPage(5)" class="bg-amber-700 hover:bg-amber-800 text-white font-title px-6 py-2.5 rounded-xl shadow-md cursor-pointer text-sm">◀ KEMBALI</button>
+            <button id="btn-next-char" onclick="proceedToGame()" disabled class="bg-emerald-500 opacity-50 cursor-not-allowed text-white font-title px-7 py-2.5 rounded-xl shadow-lg transition-all text-sm">BERIKUTNYA ▶</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= HALAMAN 17: GAME INTERAKTIF (CONTOH SOAL) ================= -->
+      <section id="page-17" class="page-screen absolute inset-0 hidden flex flex-col justify-between">
+        <!-- Header HUD Game -->
+        <header class="hud">
+          <div class="hud-box">
+            <!-- Timer tetap ada, tetapi tidak terlihat -->
+<span id="timerText" class="hud-value" style="display: none;">00:00</span>
+          </div>
+          <div class="hud-box">
+            <span class="hud-label">TOPPING</span>
+            <span id="scoreText" class="hud-value">0 / 10</span>
+          </div>
+        </header>
+
+        <!-- Arena Permainan Utama -->
+        <main class="game-arena">
+          <img
+  id="bgImage"
+  class="bg-layer"
+  src="bg game.jpeg"
+  alt="Background Kedai Seblak"
+/>
+
+          <!-- Container 10 Topping -->
+          <div id="toppingSlotsContainer" class="topping-slots-container"></div>
+          
+          
+<!-- Karakter dan mangkuk seblak -->
+<div class="character-container" id="characterContainer">
+    
+
+    <!-- Mangkuk tempat topping masuk -->
+    <div class="tray-zone" id="trayZone"></div>
+</div>
+
+
+          <!-- Tombol Kembali ke Menu -->
+          <button onclick="goToPage(16); clearInterval(timerInterval);" style="position: absolute; bottom: 20px; left: 20px; z-index: 50; background: #78350f; color: white; border: 2px solid white; border-radius: 10px; padding: 10px 16px; font-size: 0.85rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">◀ MENU</button>
+
+          <!-- Overlay Memasak Seblak -->
+          <div id="cookingOverlay" class="cooking-overlay hidden">
+            <div class="text-center">
+              <div class="text-6xl animate-bounce">🍲</div>
+              <p class="mt-2 text-lg font-bold">Memasak Seblak Lezat...</p>
+            </div>
+          </div>
+        </main>
+
+        <!-- Modal Panel Soal -->
+        <div id="questionModal" class="game-modal hidden">
+          <div class="game-modal-content">
+            <div class="flex justify-between items-center mb-2">
+              <span id="modalToppingName" class="topping-badge">Topping</span>
+              <h3 id="questionTitle" class="font-title text-base text-red-600">Pertanyaan Soal</h3>
+            </div>
+            <p id="questionText" class="text-sm mb-3 leading-relaxed">Isi soal materi aljabar SMP...</p>
+            <div id="optionsContainer" class="options-grid"></div>
+            <div id="feedbackMessage" class="hidden mt-2 p-2 rounded text-center text-xs font-bold"></div>
+            <button id="btnConfirmAnswer" onclick="checkAnswer()" class="w-full mt-3 bg-teal-600 hover:bg-teal-700 text-white py-2 rounded-lg font-bold text-sm cursor-pointer shadow">Kirim Jawaban</button>
+          </div>
+        </div>
+
+        <!-- Modal Hasil Akhir -->
+        <div id="resultModal" class="game-modal hidden">
+          <div class="game-modal-content text-center">
+            <h2 class="font-title text-xl text-red-600 mb-1">Seblak Siap Disajikan!</h2>
+            <div class="w-28 h-28 mx-auto my-2">
+              <img id="expressionImg" src="assets/expressions/happy.png" alt="Ekspresi Karakter" class="w-full h-full object-contain">
+            </div>
+            <p id="resultRating" class="font-bold text-base text-amber-700 mb-1">Sangat Bahagia!</p>
+            <p id="resultSummary" class="text-xs text-slate-600 mb-3">Kamu berhasil mengumpulkan 10 dari 10 topping.</p>
+            <button onclick="restartGame()" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg font-bold text-sm cursor-pointer shadow">Main Lagi</button>
+            <button onclick="goToPage(5)" class="w-full mt-2 bg-slate-500 hover:bg-slate-600 text-white py-2 rounded-lg font-bold text-sm cursor-pointer shadow">Kembali ke Menu</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- SCRIPT AUDIO & LOGIKA GAME -->
+  <script>
+    // --- SISTEM AUDIO ---
+    const musik = document.getElementById("musikLatar");
+    const suaraKlik = document.getElementById("suaraKlik");
+    let soundOn = true;
+
+    // Memperbarui ikon tombol audio
+    function updateSoundIcon() {
+      const ikon = document.getElementById("sound-icon");
+      const tombol = document.getElementById("sound-btn");
+
+      if (ikon) {
+        ikon.textContent = soundOn ? "🔊" : "🔇";
+      }
+
+      if (tombol) {
+        tombol.setAttribute(
+          "aria-label",
+          soundOn ? "Matikan suara" : "Nyalakan suara"
+        );
+      }
+    }
+
+    // Memainkan suara klik dari file popSFX.wav
+    function playPopSFX() {
+      if (!soundOn || !suaraKlik) return;
+
+      suaraKlik.currentTime = 0;
+      suaraKlik.play().catch(function (error) {
+        console.log("Suara klik belum dapat diputar:", error);
+      });
+    }
+
+    // Memulai musik latar dari file audio.mp3
+    function startBGM() {
+      if (!soundOn || !musik) return;
+
+      musik.play().catch(function (error) {
+        console.log("Musik belum dapat diputar:", error);
+      });
+    }
+
+    // Tombol ON/OFF musik dan suara
+    function toggleSound() {
+      soundOn = !soundOn;
+
+      if (soundOn) {
+        startBGM();
+      } else if (musik) {
+        musik.pause();
+      }
+
+      updateSoundIcon();
+    }
+
+    // Musik mulai setelah tombol MULAI ditekan
+    const tombolMulai = document.getElementById("tombol-mulai");
+
+    if (tombolMulai) {
+      tombolMulai.addEventListener("click", function () {
+        startBGM();
+      });
+    }
+
+    updateSoundIcon();
+
+    // === TARUH KODE PILIH KARAKTER DI SINI (DI BAWAH TOGGLESOUND, DI ATAS GOTOpage) ===
+    let selectedCharacter = null;
+
+    function selectCharacter(gender) {
+      playPopSFX();
+      selectedCharacter = gender;
+
+      const btnBoy = document.getElementById("btn-boy");
+      const btnGirl = document.getElementById("btn-girl");
+      const btnNext = document.getElementById("btn-next-char");
+
+      if (!btnBoy || !btnGirl || !btnNext) return;
+
+      if (gender === 'boy') {
+        btnBoy.className = "flex-1 flex flex-col items-center bg-amber-200 p-4 rounded-2xl shadow-lg border-4 border-amber-600 transition-all scale-105 cursor-pointer";
+        btnGirl.className = "flex-1 flex flex-col items-center bg-pink-50 hover:bg-pink-100 p-4 rounded-2xl shadow-md border-4 border-pink-200 transition-all hover:scale-105 cursor-pointer";
+      } else {
+        btnGirl.className = "flex-1 flex flex-col items-center bg-pink-200 p-4 rounded-2xl shadow-lg border-4 border-pink-600 transition-all scale-105 cursor-pointer";
+        btnBoy.className = "flex-1 flex flex-col items-center bg-amber-50 hover:bg-amber-100 p-4 rounded-2xl shadow-md border-4 border-amber-200 transition-all hover:scale-105 cursor-pointer";
+      }
+
+      btnNext.disabled = false;
+      btnNext.classList.remove("opacity-50", "cursor-not-allowed");
+      btnNext.classList.add("hover:bg-emerald-600", "cursor-pointer");
+    }
+
+    function proceedToGame() {
+      if (!selectedCharacter) return;
+      playPopSFX();
+
+      const characterImg = document.getElementById("characterImg");
+      if (characterImg) {
+        if (selectedCharacter === 'girl') {
+          characterImg.src = "assets/character/character-tray-girl.gif";
+        } else {
+          characterImg.src = "assets/character/character-tray.gif";
+        }
+      }
+
+      goToPage(17);
+      startGame();
+    }
+    // ==============================================================================
+
+    // --- ROUTER & NAVIGATION ---
+  
+
+    // --- NAVIGATION ROUTER ---
+    function goToPage(pageNumber) {
+      playPopSFX();
+      document.querySelectorAll('.page-screen').forEach(page => {
+        page.classList.add('hidden');
+      });
+      const targetPage = document.getElementById(`page-${pageNumber}`);
+      if (targetPage) {
+        targetPage.classList.remove('hidden');
+      }
+    }
+
+    function selectMenu(type) {
+      playPopSFX();
+      if (type === 'materi') {
+        goToPage(6);
+      } else {
+        goToPage(16); // Buka Halaman 17 (Game Interaktif Seblak)
+        startGame();  // Mulai game otomatis
+      }
+    }
+
+    // --- GAME INTERAKTIF SEBLAK CONFIG & LOGIC ---
+    const GAME_DURATION_SECONDS = 120;
+    const TOPPING_DATA = [
+      { id: 0, name: "chikuwa",       text: "Chikuwa", x: 16, y: 75 },
+      { id: 1, name: "sosis",         text: "sosis", x: 30, y: 75 },
+      { id: 2, name: "ceker",         text: "ceker", x: 43, y: 75 },
+      { id: 3, name: "kerupuk",       text: "kerupuk", x: 56, y: 75 },
+      { id: 4, name: "dimsum",        text: "dimsum", x: 69, y: 75 },
+      { id: 5, name: "Dumpling",      text: "Dumpling", x: 15, y: 96 },
+      { id: 6, name: "telur",         text: "telur", x: 29, y: 96 },
+      { id: 7, name: "cireng",        text: "cireng", x: 43, y: 96 },
+      { id: 8, name: "sayur",         text: "sayur", x: 57, y: 96 },
+      { id: 9, name: "jamur enoki",   text: "jamur enoki", x: 71, y: 96 }
+    ];
+
+    const QUESTIONS_DATA = [
+      { toppingId: 0, question: "Hasil dari bentuk aljabar 2x + 3x adalah...", options: ["5x", "6x", "5x²", "6x²"], correctIndex: 0 },
+      { toppingId: 1, question: "Suku-suku yang sejenis dari bentuk aljabar 4x² + 5x - 3x² + 2 adalah...", options: ["4x² dan 5x", "4x² dan -3x²", "5x dan 2", "Semua sejenis"], correctIndex: 1 },
+      { toppingId: 2, question: "Jika x = 3, maka nilai dari 2x + 5 adalah...", options: ["10", "11", "12", "13"], correctIndex: 1 },
+      { toppingId: 3, question: "Hasil penjumlahan (3x + 2y) + (x - 5y) adalah...", options: ["4x - 3y", "4x + 3y", "2x - 3y", "3x - 2y"], correctIndex: 0 },
+      { toppingId: 4, question: "Hasil perkalian dari (x + 2)(x + 3) adalah...", options: ["x² + 5x + 6", "x² + 6x + 5", "x² + 5x + 5", "x² + 6x + 6"], correctIndex: 0 },
+      { toppingId: 5, question: "Bentuk sederhana dari 12xy : 3x adalah...", options: ["4x", "4y", "3y", "12y"], correctIndex: 1 },
+      { toppingId: 6, question: "Faktor dari x² - 9 adalah...", options: ["(x - 3)(x - 3)", "(x + 3)(x + 3)", "(x + 3)(x - 3)", "(x - 9)(x + 1)"], correctIndex: 2 },
+      { toppingId: 7, question: "Jika 5x - 3 = 12, maka nilai x adalah...", options: ["2", "3", "4", "5"], correctIndex: 1 },
+      { toppingId: 8, question: "Keliling persegi panjang dengan panjang (2x + 1) dan lebar x adalah...", options: ["3x + 1", "6x + 2", "4x + 2", "2x + 2"], correctIndex: 1 },
+      { toppingId: 9, question: "Hasil pengurangan (5x + 4) dari (8x - 2) adalah...", options: ["3x - 6", "3x + 6", "-3x + 6", "-3x - 6"], correctIndex: 0 }
+    ];
+
+    const EXPRESSION_CONFIG = [
+      { minScore: 10, maxScore: 10, image: "assets/expressions/happy.png",   title: "Sangat Bahagia! 🎉" },
+      { minScore: 6,  maxScore: 9,  image: "assets/expressions/smile.png",   title: "Senang & Puas! 😊" },
+      { minScore: 3,  maxScore: 5,  image: "assets/expressions/neutral.png", title: "Biasa Saja 😐" },
+      { minScore: 1,  maxScore: 2,  image: "assets/expressions/sad.png",     title: "Agak Sedih... 🙁" },
+      { minScore: 0,  maxScore: 0,  image: "assets/expressions/cry.png",     title: "Kecewa & Menangis 😭" }
+    ];
+
+    let timeRemaining = 30;
+    let timerInterval = null;
+    let collectedToppingsCount = 0;
+    let currentActiveToppingId = null;
+    let selectedOptionIndex = null;
+    let completedToppingIds = new Set();
+
+    function startGame() {
+      timeRemaining = GAME_DURATION_SECONDS;
+      collectedToppingsCount = 0;
+      completedToppingIds.clear();
+      currentActiveToppingId = null;
+      selectedOptionIndex = null;
+
+      document.getElementById("scoreText").innerText = `0 / 10`;
+      document.getElementById("trayZone").innerHTML = "";
+      document.getElementById("cookingOverlay").classList.add("hidden");
+      document.getElementById("resultModal").classList.add("hidden");
+      document.getElementById("questionModal").classList.add("hidden");
+
+      renderToppingItems();
+    }
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      updateTimerDisplay();
+      timerInterval = setInterval(() => {
+        timeRemaining--;
+        updateTimerDisplay();
+        if (timeRemaining <= 0) {
+          clearInterval(timerInterval);
+          finishGame();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const minutes = Math.floor(timeRemaining / 60);
+      const seconds = timeRemaining % 60;
+      document.getElementById("timerText").innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+   function renderToppingItems() {
+      const container = document.getElementById("toppingSlotsContainer");
+      container.innerHTML = "";
+      TOPPING_DATA.forEach(topping => {
+        const itemEl = document.createElement("div");
+        itemEl.className = "topping-item flex items-center justify-center text-xs font-bold bg-amber-200 text-amber-900 border-2 border-amber-600 rounded-lg shadow-lg cursor-pointer";
+        itemEl.id = `topping-item-${topping.id}`;
+        itemEl.style.position = "absolute";
+        itemEl.style.width = "90px";
+        itemEl.style.height = "40px";
+        itemEl.style.left = `${topping.x}%`;
+        itemEl.style.top = `${topping.y}%`;
+        itemEl.style.transform = "translate(-50%, -50%)";
+
+        itemEl.innerText = topping.text;
+
+        itemEl.addEventListener("click", () => {
+          if (!completedToppingIds.has(topping.id) && timeRemaining > 0) {
+            showQuestion(topping.id);
+          }
+        });
+        container.appendChild(itemEl);
+      });
+    }
+
+    function showQuestion(toppingId) {
+      currentActiveToppingId = toppingId;
+      selectedOptionIndex = null;
+      const topping = TOPPING_DATA.find(t => t.id === toppingId);
+      const questionObj = QUESTIONS_DATA.find(q => q.toppingId === toppingId);
+
+      document.getElementById("modalToppingName").innerText = topping.name;
+      document.getElementById("questionTitle").innerText = `Soal Aljabar ${topping.name}`;
+      document.getElementById("questionText").innerText = questionObj.question;
+
+      const feedback = document.getElementById("feedbackMessage");
+      feedback.classList.add("hidden");
+      document.getElementById("btnConfirmAnswer").disabled = false;
+
+      const optContainer = document.getElementById("optionsContainer");
+      optContainer.innerHTML = "";
+      questionObj.options.forEach((optText, index) => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.innerText = `${String.fromCharCode(65 + index)}. ${optText}`;
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".option-btn").forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
+          selectedOptionIndex = index;
+        });
+        optContainer.appendChild(btn);
+      });
+
+      document.getElementById("questionModal").classList.remove("hidden");startTimer()
+    }
+
+    function checkAnswer() {
+      if (selectedOptionIndex === null) {
+        alert("Pilih salah satu jawaban terlebih dahulu!");
+        return;
+      }
+      const questionObj = QUESTIONS_DATA.find(q => q.toppingId === currentActiveToppingId);
+      const topping = TOPPING_DATA.find(t => t.id === currentActiveToppingId);
+      const toppingEl = document.getElementById(`topping-item-${currentActiveToppingId}`);
+      const feedback = document.getElementById("feedbackMessage");
+      document.getElementById("btnConfirmAnswer").disabled = true;
+      clearInterval(timerInterval);
+timerInterval = null;
+
+      if (selectedOptionIndex === questionObj.correctIndex) {
+        feedback.className = "mt-2 p-2 rounded text-center text-xs font-bold bg-green-100 text-green-800";
+        feedback.innerText = "Jawaban Tepat! Topping didapatkan.";
+        feedback.classList.remove("hidden");
+        setTimeout(() => {
+          document.getElementById("questionModal").classList.add("hidden");
+          completedToppingIds.add(currentActiveToppingId);
+          collectTopping(topping, toppingEl);
+        }, 1000);
+      } else {
+    feedback.className =
+        "mt-2 p-2 rounded text-center text-xs font-bold bg-red-100 text-red-800";
+
+    feedback.innerText = "Belum tepat! Coba jawab lagi.";
+    feedback.classList.remove("hidden");
+
+    setTimeout(() => {
+        document.getElementById("questionModal").classList.add("hidden");
+
+        // Topping tidak dianggap selesai jika jawaban salah
+        document.getElementById("btnConfirmAnswer").disabled = false;
+        currentActiveToppingId = null;
+    }, 1000);
+}
+    }
+
+    
+
+
+function collectTopping(topping, toppingEl) {
+    const tray = document.getElementById("trayZone");
+
+    if (!tray || !topping || !toppingEl) {
+        console.error("Mangkuk atau data topping tidak ditemukan.");
+        return;
+    }
+
+    // Jangan masukkan topping yang sama dua kali
+    if (tray.querySelector(`[data-topping-id="${topping.id}"]`)) {
+        return;
+    }
+
+    const toppingImages = {
+        "chikuwa": "chikuwa.png",
+        "sosis": "sosis.png",
+        "ceker": "ceker.png",
+        "kerupuk": "krupuk.png",
+        "dimsum": "dimsum.png",
+        "Dumpling": "dumpling.png",
+        "telur": "telur.png",
+        "cireng": "cireng.png",
+        "sayur": "sayur.png",
+        "jamur enoki": "jamur enoki.png"
+    };
+
+    const toppingImg = document.createElement("img");
+
+    toppingImg.src = toppingImages[topping.name];
+    toppingImg.alt = topping.text;
+    toppingImg.className = "collected-topping";
+    toppingImg.dataset.toppingId = topping.id;
+
+    // Jika gambar gagal dimuat, tampilkan nama topping
+    toppingImg.onerror = function () {
+        const fallback = document.createElement("span");
+
+        fallback.dataset.toppingId = topping.id;
+        fallback.textContent = topping.text;
+        fallback.style.cssText =
+    "width:75px;height:75px;flex:0 0 75px;" +
+    "display:flex;align-items:center;justify-content:center;" +
+    "font-size:10px;font-weight:bold;text-align:center;" +
+    "overflow-wrap:anywhere;";
+
+    };
+
+    // Tambahkan gambar baru tanpa menghapus gambar sebelumnya
+    tray.appendChild(toppingImg);
+
+    collectedToppingsCount++;
+    document.getElementById("scoreText").innerText =
+        collectedToppingsCount + " / 10";
+
+    toppingEl.classList.add("disabled");
+
+    checkGameCompletion();
+}
+
+
+
+
+  </script>
+</body>
+</html>
